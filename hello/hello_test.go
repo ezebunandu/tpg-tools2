@@ -7,7 +7,7 @@ import (
 	"github.com/ezebunandu/hello"
 )
 
-func TestPrint__PrintsHelloMessageToGivenWriter(t *testing.T){
+func TestPrintTo__PrintsHelloMessageToGivenWriter(t *testing.T){
     t.Parallel()
     buf := new(bytes.Buffer)
     hello.PrintTo(buf)
