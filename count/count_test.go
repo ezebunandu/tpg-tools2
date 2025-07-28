@@ -74,6 +74,23 @@ func TestWithInputFromArgs__IgnoresEmptyArgs(t *testing.T){
     }
 }
 
+func TestWords__CountsWordsInInput(t *testing.T){
+    t.Parallel()
+
+    inputBuf := bytes.NewBufferString("one two\nthree\n")
+    c, err := count.NewCounter(
+        count.WithInput(inputBuf),
+    )
+    if err != nil {
+        t.Fatal(err)
+    }
+    want := 3
+    got := c.Words()
+    if want != got {
+        t.Errorf("want %d, got %d", want, got)
+    }
+}
+
 func Test(t *testing.T){
     t.Parallel()
     testscript.Run(t, testscript.Params{
@@ -83,6 +100,7 @@ func Test(t *testing.T){
 
 func TestMain(m *testing.M) {
     testscript.Main(m, map[string]func(){
-        "count": count.Main,
+        "lines": count.MainLines,
+        "words": count.MainWords,
     })
 }
