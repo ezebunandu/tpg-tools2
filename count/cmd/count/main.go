@@ -6,5 +6,5 @@ import (
 )
 
 func main(){
-    count.MainWords()
+    count.Main()
 }
