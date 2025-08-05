@@ -6,6 +6,7 @@ import (
 
 	"github.com/ezebunandu/writer"
 	"github.com/google/go-cmp/cmp"
+    "github.com/rogpeppe/go-internal/testscript"
 )
 
 func TestWriteToFile__WritesGivenDataToFile(t *testing.T){
@@ -75,4 +76,17 @@ func TestWriteToFile__ChangesPermsOnExistingFile(t *testing.T){
     if want != got {
         t.Errorf("want file mode %q, got %q", want, got)
     }
+}
+
+func Test(t *testing.T){
+    t.Parallel()
+    testscript.Run(t, testscript.Params{
+        Dir: "testdata/script",
+    })
+}
+
+func TestMain(m *testing.M) {
+    testscript.Main(m, map[string]func(){
+        "writefile": writer.Main,
+    })
 }
