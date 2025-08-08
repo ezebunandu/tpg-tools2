@@ -8,7 +8,8 @@ import (
 )
 
 func main(){
-    paths := findgo.Files(os.Args[1])
+    fsys := os.DirFS(os.Args[1])
+    paths := findgo.Files(fsys)
     for _, p := range paths {
         fmt.Println(p)
     }
