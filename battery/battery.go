@@ -5,7 +5,6 @@ import (
 	"os/exec"
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 type Status struct {
@@ -29,12 +28,9 @@ func ParsePmsetOutput(text string) (Status, error) {
 }
 
 func GetPmsetOuput() (text string, err error){
-    cmd := exec.Command("/usr/bin/pmset", "-g", "ps")
-    var out strings.Builder
-    cmd.Stdout = &out
-    err = cmd.Run()
+    data, err := exec.Command("/usr/bin/pmset", "-g", "ps").CombinedOutput()
     if err != nil {
-        return "", err
+        return "", nil
     }
-    return out.String(), nil
+    return string(data), nil
 }
