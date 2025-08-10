@@ -5,14 +5,17 @@ import (
 	"time"
 )
 
-func Files(fsys fs.FS, duration time.Duration) (files []string) {
-	now := time.Now()
+func Files(fsys fs.FS, age time.Duration) (paths []string) {
+	threshold := time.Now().Add(-age)
 	fs.WalkDir(fsys, ".", func(p string, d fs.DirEntry, err error) error {
-		fileInfo, _ := fs.Stat(fsys, p)
-		if !fileInfo.IsDir() && now.Sub(fileInfo.ModTime()) > duration {
-			files = append(files, p)
+		fi, err  := d.Info()
+		if err != nil || fi.IsDir() {
+			return nil
+		}
+		if fi.ModTime().Before(threshold){
+			paths = append(paths, p)
 		}
 		return nil
 	})
-	return files
+	return paths
 }
