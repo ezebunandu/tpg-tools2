@@ -41,3 +41,14 @@ func (p *Pipeline) Stdout(){
     }
     io.Copy(p.Output, p.Reader)
 }
+
+func (p *Pipeline) String() (string, error){
+    if p.Error != nil {
+        return "", p.Error
+    }
+    data, err := io.ReadAll(p.Reader)
+    if err!= nil {
+        return  "", err
+    }
+    return string(data), nil
+}
