@@ -1,6 +1,9 @@
 package pipeline
 
 import (
+	"bufio"
+	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -51,4 +54,27 @@ func (p *Pipeline) String() (string, error){
         return  "", err
     }
     return string(data), nil
+}
+
+func (p *Pipeline) Column(col int) *Pipeline{
+    if p.Error != nil {
+        p.Reader = strings.NewReader("")
+        return  p
+    }
+    if col < 1 {
+        p.Error = fmt.Errorf("bad column %d: must be positive", col)
+        return p
+    }
+    result := new(bytes.Buffer)
+    input := bufio.NewScanner(p.Reader)
+    for input.Scan(){
+        fields := strings.Fields(input.Text())
+        if len(fields) < col {
+            continue
+        }
+        fmt.Fprintln(result, fields[col-1])
+    }
+    return &Pipeline{
+        Reader: result,
+    }
 }

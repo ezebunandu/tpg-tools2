@@ -85,3 +85,46 @@ func TestString__ReturnsErrorWhenPipeErrorSet(t *testing.T){
         t.Error("want error when pipe error set but got none")
     } 
 }
+
+func TestColumn__SelectsColumn2of3(t *testing.T){
+    t.Parallel()
+    input := "1 2 3\n1 2 3\n1 2 3\n"
+    p := pipeline.FromString(input)
+    want := "2\n2\n2\n"
+    got, err := p.Column(2).String()
+    if err != nil {
+        t.Fatal(err)
+    }
+    if !cmp.Equal(want, got){
+        t.Error(cmp.Diff(want, got))
+    }
+}
+
+func TestColumn__ProducesNothingWhenPipeErrorSet(t *testing.T){
+    t.Parallel()
+    p := pipeline.FromFile("1 2 3\n")
+    p.Error = errors.New("Oops")
+    data, err := io.ReadAll(p.Column(1).Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+    if len(data) > 0 {
+        t.Errorf("want no output from Column after error, but got %q", data)
+    }
+}
+
+func TestColumn__SetsErrorAndProducesNothingGivenInvalidArg(t *testing.T){
+    t.Parallel()
+    p := pipeline.FromString("1 2 3\n1 2 3\n1 2 3\n")
+    p.Column(-1)
+    if p.Error == nil {
+        t.Error("want error on non-positive Column, but got nil")
+    }
+    data, err := io.ReadAll(p.Column(1).Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+    if len(data) > 0 {
+        t.Errorf("want no output from Column with invalid col, but got %q", data)
+    }
+}
