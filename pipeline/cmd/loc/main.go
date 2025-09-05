@@ -15,5 +15,5 @@ func main(){
         fmt.Fprintln(os.Stderr, err)
         os.Exit(1)
     }
-    fmt.Printf("You've written %d lines in Go in this project", lines)
+    fmt.Printf("You've written %d lines of Go in this project\n", lines)
 }
