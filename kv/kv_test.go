@@ -50,3 +50,31 @@ func TestSet__UpdatesExistingKeyToNewValue(t *testing.T){
         t.Errorf("want 'updated', got %q", v)
     }
 }
+func TestSave__SavesDataPersistently(t *testing.T){
+    t.Parallel()
+    path := t.TempDir() + "/kvtest.store"
+    s, err := kv.Openstore(path)
+    if err != nil {
+        t.Fatal(err)
+    }
+    s.Set("A", "1")
+    s.Set("B", "2")
+    s.Set("C", "3")
+    err = s.Save()
+    if err != nil {
+        t.Fatal(err)
+    }
+    s2, err := kv.Openstore(path)
+    if err != nil {
+        t.Fatal(err)
+    }
+    if v, _ := s2.Get("A"); v != "1" {
+        t.Fatalf("want A=1, got A=%s", v)
+    }
+    if v, _ := s2.Get("B"); v != "2" {
+        t.Fatalf("want B=2, got A=%s", v)
+    }
+    if v, _ := s2.Get("C"); v != "3" {
+        t.Fatalf("want C=3, got A=%s", v)
+    }
+}
