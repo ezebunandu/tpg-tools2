@@ -1,6 +1,7 @@
 package battery
 
 import (
+	"encoding/json"
 	"fmt"
 	"os/exec"
 	"regexp"
@@ -9,6 +10,22 @@ import (
 
 type Status struct {
     ChargePercent int
+}
+
+type Battery struct {
+    Name string
+    ID int
+    ChargePercent int
+    TimeToFullCharge string
+    Present bool
+}
+
+func (b *Battery) ToJSON() string {
+    output, err := json.Marshal(b)
+    if err != nil {
+        panic(err)
+    }
+    return string(output)
 }
 
 var pmsetOutput = regexp.MustCompile("([0-9]+)%")
