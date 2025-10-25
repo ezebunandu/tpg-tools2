@@ -1,12 +1,14 @@
 package weather_test
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 
 	"github.com/ezebunandu/weather"
 
-    "github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp"
 )
 func TestParseResponse__CorrectlyParsesJSONData(t *testing.T){
     t.Parallel()
@@ -56,4 +58,24 @@ func TestFormatURL__ReturnsCorrectURLForGivenInput(t *testing.T){
     if !cmp.Equal(want, got){
         t.Error(cmp.Diff(want, got))
     }
+}
+
+func TestHTTPGet__SuccessfullyGetsFromLocalServer(t *testing.T){
+    t.Parallel()
+    ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+        http.ServeFile(w, r, "testdata/weather.json")
+    }))
+    defer ts.Close()
+    client := ts.Client()
+    resp, err := client.Get(ts.URL)
+    if err != nil {
+        t.Fatal(err)
+    }
+    defer resp.Body.Close()
+    want := http.StatusOK
+    got := resp.StatusCode
+    if !cmp.Equal(want, got){
+        t.Error(cmp.Diff(want, got))
+    }
+
 }
