@@ -50,11 +50,10 @@ func TestParseResponse__ReturnsErrorGivenInvalidJSON(t *testing.T){
 
 func TestFormatURL__ReturnsCorrectURLForGivenInput(t *testing.T){
     t.Parallel()
-    baseURL := weather.BaseURL
+    c := weather.NewClient("dummyAPIKey")
     location := "Calgary,CA"
-    key := "dummyAPIKey"
     want := "https://api.openweathermap.org/data/2.5/weather?q=Calgary,CA&appid=dummyAPIKey"
-    got := weather.FormatURL(baseURL, location, key)
+    got := c.FormatURL(location)
     if !cmp.Equal(want, got){
         t.Error(cmp.Diff(want, got))
     }
@@ -78,4 +77,25 @@ func TestHTTPGet__SuccessfullyGetsFromLocalServer(t *testing.T){
         t.Error(cmp.Diff(want, got))
     }
 
+}
+
+func TestGetWeather__ReturnsExpectedConditions(t *testing.T){
+    t.Parallel()
+    ts := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+        http.ServeFile(w, r, "testdata/weather.json")
+    }))
+    defer ts.Close()
+    c := weather.NewClient("dummyAPIKey")
+    c.BaseURL = ts.URL
+    c.HTTPClient = ts.Client()
+    want := weather.Conditions{
+        Summary: "Clouds",
+    }
+    got, err := c.GetWeather("Calgary,CA")
+    if err != nil {
+        t.Fatal(err)
+    }
+    if !cmp.Equal(want, got){
+        t.Error(cmp.Diff(want, got))
+    }
 }
