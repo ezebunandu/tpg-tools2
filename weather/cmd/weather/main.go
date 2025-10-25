@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 
 	"github.com/ezebunandu/weather"
@@ -26,23 +24,8 @@ func main(){
         os.Exit(0)
     }
     location := os.Args[1]
-    URL := weather.FormatURL(weather.BaseURL, location, key)
-    resp, err := http.Get(URL)
-    if err != nil {
-        fmt.Fprintln(os.Stderr, err)
-        os.Exit(1)
-    }
-    defer resp.Body.Close()
-    if resp.StatusCode != http.StatusOK {
-        fmt.Fprintln(os.Stderr, "unexpected response status", resp.Status)
-        os.Exit(1)
-    }
-    data, err := io.ReadAll(resp.Body)
-    if err != nil {
-        fmt.Fprintln(os.Stderr, err)
-        os.Exit(1)
-    }
-    conditions, err := weather.ParseResponse(data)
+    c := weather.NewClient(key)
+    conditions, err := c.GetWeather(location)
     if err != nil {
         fmt.Fprintln(os.Stderr, err)
         os.Exit(1)
