@@ -18,6 +18,7 @@ func TestParseResponse__CorrectlyParsesJSONData(t *testing.T){
     }
     want := weather.Conditions{
         Summary: "Clouds",
+        Temperature: 283.71,
     }
     got, err := weather.ParseResponse(data)
     if err != nil {
@@ -90,6 +91,7 @@ func TestGetWeather__ReturnsExpectedConditions(t *testing.T){
     c.HTTPClient = ts.Client()
     want := weather.Conditions{
         Summary: "Clouds",
+        Temperature: 283.71,
     }
     got, err := c.GetWeather("Calgary,CA")
     if err != nil {

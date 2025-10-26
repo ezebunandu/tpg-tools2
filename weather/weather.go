@@ -5,17 +5,22 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+    "os"
 	"time"
 )
 
 
 type Conditions struct {
     Summary string
+    Temperature float64
 }
 
 type OWMResponse struct {
     Weather []struct{
         Main string
+    }
+    Main struct {
+        Temp float64
     }
 }
 
@@ -72,6 +77,40 @@ func ParseResponse(data []byte) (Conditions, error){
     }
     conditions := Conditions{
         Summary: resp.Weather[0].Main,
+        Temperature: resp.Main.Temp,
     }
     return  conditions, nil
+}
+
+func Get(location, key string) (Conditions, error){
+    c := NewClient(key)
+    conditions, err := c.GetWeather(location)
+    if err != nil {
+        return Conditions{}, err
+    }
+    return  conditions, nil
+}
+
+const Usage = `Usage: weather LOCATION
+    Example: weather Calgary,CA`
+
+func Main() {
+    if len(os.Args) < 2 {
+        fmt.Println(Usage)
+        os.Exit(0)
+    }
+    key := os.Getenv("OPENWEATHERMAP_API_KEY")
+    if key == "" {
+        fmt.Fprintln(os.Stderr, "Please set the environment variable OPENWEATHERMAP_API_KEY.")
+        os.Exit(1)
+    }
+    location := os.Args[1]
+    c := NewClient(key)
+    conditions, err := c.GetWeather(location)
+    if err != nil {
+        fmt.Fprintln(os.Stderr, err)
+        os.Exit(1)
+    }
+    fmt.Println(conditions)
+    os.Exit(0)
 }
