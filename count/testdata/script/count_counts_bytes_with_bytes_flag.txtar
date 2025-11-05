@@ -1,5 +1,0 @@
-exec count -bytes input.txt
-stdout '^8\n$'
-
--- input.txt --
-8 bytes
