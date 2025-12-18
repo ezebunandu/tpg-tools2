@@ -3,9 +3,23 @@ package hello
 import (
 	"fmt"
 	"io"
+	"os"
 )
 
+type Printer struct {
+	Output io.Writer
+}
 
-func PrintTo(w io.Writer){
-    fmt.Fprintf(w, "Hello, world\n")
+func NewPrinter() *Printer {
+	return  &Printer{
+		Output: os.Stdout,
+	}
+}
+
+func (p Printer) Print(){
+    fmt.Fprintln(p.Output, "Hello, world")
+}
+
+func Main(){
+	NewPrinter().Print()
 }
