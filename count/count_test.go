@@ -22,3 +22,36 @@ func TestLines__CountsLinesInInput(t *testing.T){
         t.Errorf("want %d, got %d", want, got)
     }
 }
+
+func TestWithInputFromArgs__SetsInputToGivenPath(t *testing.T){
+    t.Parallel()
+    args := []string{"testdata/three_lines.txt"}
+    c, err := count.NewCounter(
+        count.WithInputFromArgs(args),
+    )
+    if err != nil {
+        t.Fatal(err)
+    }
+    want := 3
+    got := c.Lines()
+    if want != got {
+        t.Errorf("want %d, got %d", want, got)
+    }
+}
+
+func TestWithInputFromArgs__IgnoresEmptyArgs(t *testing.T){
+    t.Parallel()
+    inputBuf := bytes.NewBufferString("1\n2\n3")
+    c, err := count.NewCounter(
+        count.WithInput(inputBuf),
+        count.WithInputFromArgs([]string{}),
+    )
+    if err != nil {
+        t.Fatal(err)
+    }
+    want := 3
+    got := c.Lines()
+    if want != got {
+        t.Errorf("want %d, got %d", want, got)
+    }
+}
