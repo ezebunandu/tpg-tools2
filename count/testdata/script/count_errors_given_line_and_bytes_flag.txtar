@@ -1,0 +1,3 @@
+! exec count -lines -bytes input.txt
+stderr 'lines or bytes but not both'
+-- input.txt --
