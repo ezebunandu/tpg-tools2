@@ -3,6 +3,7 @@ package count
 import (
 	"bufio"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -80,13 +81,37 @@ func (c counter) Lines() int{
     return  lines
 }
 
+func (c counter) Words() int{
+    words := 0
+    input := bufio.NewScanner(c.input)
+    input.Split(bufio.ScanWords)
+    for input.Scan(){
+        words++
+    }
+    for _, f := range c.files {
+        f.(io.Closer).Close()
+    }
+    return  words
+}
+
 func Main(){
+    lineMode := flag.Bool("lines", false, "Count lines, not words")
+    flag.Usage = func ()  {
+       fmt.Printf("Usage: %s [-lines] [files...]\n", os.Args[0]) 
+       fmt.Println("Counts words (or lines) in named files or standard input.\nFlags:")
+       flag.PrintDefaults()
+    }
+    flag.Parse()
     c, err := NewCounter(
-        WithInputFromArgs(os.Args[1:]),
+        WithInputFromArgs(flag.Args()),
     )
     if err != nil {
         fmt.Fprintln(os.Stderr, err)
         os.Exit(1)
     }
-    fmt.Println(c.Lines())
+    if *lineMode {
+        fmt.Println(c.Lines())
+    } else {
+        fmt.Println(c.Words())
+    }
 }

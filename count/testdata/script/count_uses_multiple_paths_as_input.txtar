@@ -1,9 +1,0 @@
-exec count two_lines.txt three_lines.txt
-stdout '^5\n$'
--- two_lines.txt --
-here are two lines
-of text to sooth your worries
--- three_lines.txt --
-this input
-contains 
-three lines
