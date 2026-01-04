@@ -2,12 +2,10 @@ package findgo
 
 import (
 	"io/fs"
-	"os"
 	"path/filepath"
 )
 
-func Files(path string)(paths []string){
-    fsys := os.DirFS(path)
+func Files(fsys fs.FS)(paths []string){
     fs.WalkDir(fsys, ".", func(p string, d fs.DirEntry, err error) error {
         if filepath.Ext(p) == ".go"{
             paths = append(paths, p)
