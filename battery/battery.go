@@ -2,6 +2,7 @@ package battery
 
 import (
 	"fmt"
+	"os/exec"
 	"regexp"
 	"strconv"
 )
@@ -22,4 +23,12 @@ func ParsePmSetOutput(text string) (Status, error) {
 		return Status{}, err
 	}
 	return Status{ChargePercent: charge}, nil
+}
+
+func GetPmsetOutput() (string, error){
+	data, err := exec.Command("/usr/bin/pmset", "-g",  "ps").CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	return string(data), nil
 }
