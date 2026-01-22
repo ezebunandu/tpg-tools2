@@ -1,7 +1,6 @@
 package howlong
 
 import (
-	// "os"
 	"os"
 	"os/exec"
 	"time"
