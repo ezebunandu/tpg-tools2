@@ -63,3 +63,26 @@ func TestFromFile_SetsErrorGivenNonExistentFile(t *testing.T){
         t.Fatal("want error openining non-existent file, got nil")
     }
 }
+
+func TestString_ReturnsPipeContents(t *testing.T) {
+    t.Parallel()
+    want := "Hello, world\n"    
+    p := pipeline.FromString(want)
+    got, err := p.String()
+    if err != nil {
+        t.Fatal(err)
+    }
+    if !cmp.Equal(want, got){
+        t.Errorf("want %q, got %q", want, got)
+    }
+}
+
+func TestString_ReturnsErrorWhenPipeErrorSet(t *testing.T){
+    t.Parallel()
+    p := pipeline.FromString("Hello, world\n")
+    p.Error = errors.New("oh no")
+    _, err := p.String()
+    if err == nil {
+        t.Error("want error from String when pipeline has error, but got nil")
+    }
+}

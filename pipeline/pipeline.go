@@ -40,3 +40,14 @@ func FromFile(path string) *Pipeline {
     p.Reader = f
     return p
 }
+
+func (p *Pipeline) String()  (string, error){
+    if p.Error != nil {
+        return "", p.Error
+    }
+    data, err := io.ReadAll(p.Reader)
+    if err != nil {
+        return "", err
+    }
+    return string(data), nil
+}
