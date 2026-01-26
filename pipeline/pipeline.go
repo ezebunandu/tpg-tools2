@@ -1,7 +1,8 @@
 package pipeline
 
 import (
-    "io"
+	"io"
+	"os"
 	"strings"
 )
 
@@ -11,13 +12,31 @@ type Pipeline struct {
 	Error  error
 }
 
-func FromString(s string) *Pipeline {
-	return &Pipeline{Reader: strings.NewReader(s)}
+func NewPipeline() *Pipeline{
+    return &Pipeline{
+        Output: os.Stdout,
+    }
 }
 
-func (p Pipeline) Stdout() {
+func FromString(s string) *Pipeline {
+    p := NewPipeline()
+    p.Reader = strings.NewReader(s)
+    return p
+}
+
+func (p *Pipeline) Stdout() {
 	if p.Error != nil {
 		return
 	}
 	io.Copy(p.Output, p.Reader)
+}
+
+func FromFile(path string) *Pipeline {
+    p := NewPipeline()
+    f, err := os.Open(path)
+    if err != nil {
+        p.Error = err
+    }
+    p.Reader = f
+    return p
 }
