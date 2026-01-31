@@ -1,7 +1,7 @@
 package main
 
-import "github.com/ezebunandu/pipeline"
+import "github.com/bitfield/script"
 
 func main(){
-    pipeline.FromString("hello world\n").Stdout()
+    script.Args().Concat().Column(1).Freq().First(10).Stdout()
 }
